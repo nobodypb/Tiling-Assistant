@@ -417,6 +417,9 @@ function tileWindow(window, newRect, openTilingPopup = true, skipAnim = false) {
 	// raise @window since tiling via the popup means that the window can be below others
 	window.raise();
 
+    //if(MainExtension.settings.get_boolean("make-untiled-above"))
+    window.unmake_above(); // This always is a good idea, isn't it?
+
 	// remove @window from other windows' tileGroups so it doesn't falsely get raised with them
 	dissolveTileGroupFor(window);
 
@@ -523,6 +526,9 @@ function restoreWindowSize(window, restoreFullPos = true, grabXCoord = undefined
 	// so untiling the initial window after tiling more windows with the popup
 	// (without re-focusing the initial window) means the untiled window will be below the others
 	window.raise();
+
+    if(MainExtension.settings.get_boolean("make-untiled-above"))
+        window.make_above();
 
 	// animation hack => journalctl: error in size change accounting; SizeChange flag?
 	if (!wasMaximized && !skipAnim && MainExtension.settings.get_boolean("enable-untile-animations"))

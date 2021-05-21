@@ -11,6 +11,9 @@
         <key name="invert-ctrl-behaviour" type="b">
 			<default>false</default>
 		</key>
+        <key name="make-untiled-above" type="b">
+			<default>false</default>
+		</key>
 		<key name="tiling-popup-current-workspace-only" type="b">
 			<default>true</default>
 		</key>

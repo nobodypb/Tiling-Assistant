@@ -31,6 +31,8 @@ const PieMenu = Me.imports.tilingPieMenu;
 const TileEditing = Me.imports.tilingEditingMode;
 const SemiAutoTilingMode = Me.imports.tilingSemiAutoMode;
 
+const Mod = Me.imports.mod;
+
 const Gettext = imports.gettext;
 const Domain = Gettext.domain(Me.metadata.uuid);
 const _ = Domain.gettext;
@@ -119,6 +121,8 @@ function enable() {
 	// open apps tiled by holding Shift when activating an AppIcon
 	this.semiAutoTiler = new SemiAutoTilingMode.Manager();
 
+    Mod.init();
+
 	// restore window properties after session was unlocked
 	_loadAfterSessionLock();
 };
@@ -126,6 +130,8 @@ function enable() {
 function disable() {
 	// save window properties, if session was locked to restore after unlock
 	_saveBeforeSessionLock();
+
+    Mod.destroy();
 
 	this.tilePreview.destroy();
 	this.tilePreview = null;
