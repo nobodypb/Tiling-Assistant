@@ -24,6 +24,19 @@ function window_created(display, window) {
 function restacked(display) {
     // Called every time the stack order of windows changes for some reason
     //log("restacked", display)
+    window_focus(display);
+}
+
+function get_window_surface(meta_window) {
+	let window_actor = meta_window.get_compositor_private();
+	let childs = window_actor.get_children();
+	for (let i = 0; i < childs.length; i++) {
+		if (childs[i].constructor.name.indexOf('MetaSurfaceActor') > -1) {
+			return childs[i];
+		}
+	}
+
+	return window_actor;
 }
 
 function window_focus(display) {
@@ -34,20 +47,24 @@ function window_focus(display) {
 
     // TODO: Only set opacity if covering other windows
     for (const window of openWindows) {
-        const actor = window.get_compositor_private();
+        const surface = get_window_surface(window);
 
-        if (!actor)
+        if (!surface)
             continue; // Nothing we could do with this
 
-        if (window === focusWindow) {
-            actor.set_opacity(255); // Full opaque, if in focus
+        if (window === focusWindow || !window.is_above()) {
+            surface.opacity = 255; // Full opaque, if in focus
             continue;
         }
 
-        if (!window.is_above())
-            continue;
-
         //Some graphics bug
+        surface.ease({
+			duration: 250,
+			mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+			opacity: 200,
+			//onComplete: complete_func
+		});
+
         //actor.set_opacity(200); 
     }
 }
