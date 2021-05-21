@@ -81,7 +81,7 @@ const MyPrefsWidget = new GObject.Class({
 				, "pie-menu-deadzone-radius", "pie-menu-item-radius"];
 		const bools = ["enable-tiling-popup", "enable-dynamic-tiling", "enable-tile-animations", "enable-untile-animations"
 				, "enable-raise-tile-group", "enable-hold-maximize-inverse-landscape", "enable-hold-maximize-inverse-portrait"
-				, "enable-pie-menu", "maximize-with-gap", "tiling-popup-current-workspace-only", "enable-tiling-mode", "invert-ctrl-behaviour", "make-untiled-above"];
+				, "enable-pie-menu", "maximize-with-gap", "tiling-popup-current-workspace-only", "enable-tiling-mode", "invert-ctrl-behaviour", "make-untiled-above", "untile-covered-windows"];
 		const enums = ["restore-window-size-on"];
 		const colors = ["tile-editing-mode-color"];
 

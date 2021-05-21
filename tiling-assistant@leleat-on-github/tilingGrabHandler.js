@@ -157,9 +157,14 @@ var WindowGrabHandler = class TilingWindowGrabHandler {
 				break;
 
 			case PREVIEW_STATE.SINGLE:
-				if (this._ctrlHoveredWindow && !previewRect.equal(this._ctrlHoveredWindow.tiledRect)) {
-					const splitRect = Util.rectDiff(this._ctrlHoveredWindow.tiledRect, previewRect)[0];
-					Util.tileWindow(this._ctrlHoveredWindow, splitRect, false);
+				if (this._ctrlHoveredWindow) {
+                    if(!previewRect.equal(this._ctrlHoveredWindow.tiledRect)) {
+                        const splitRect = Util.rectDiff(this._ctrlHoveredWindow.tiledRect, previewRect)[0];
+					    Util.tileWindow(this._ctrlHoveredWindow, splitRect, false);
+                    }
+                    else if (MainExtension.settings.get_boolean("untile-covered-windows")) {
+                        Util.restoreWindowSize(this._ctrlHoveredWindow);
+                    }
 				}
 
 			case PREVIEW_STATE.DEFAULT:
