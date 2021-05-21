@@ -24,6 +24,9 @@ var WindowGrabHandler = class TilingWindowGrabHandler {
 		// because native rounding code doesnt fit my possible previews
 		this.tilePreview.style_class = "tile-preview";
 		this.tilePreview._updateStyle = () => {};
+        
+        this._currentTileGroup = null;
+        this._freeScreenRects = null;
 	}
 
 	destroy() {
@@ -42,9 +45,10 @@ var WindowGrabHandler = class TilingWindowGrabHandler {
 			this._moveStarted = false;
 		}
 
-		const topTileGroup = Util.getTopTileGroup();
-		window.grabSignalID = window.connect("position-changed", this.onMoving.bind(this, window
-				, topTileGroup, Util.getFreeScreenRects(topTileGroup)));
+		this._currentTileGroup = Util.getTopTileGroup();
+        this._freeScreenRects = Util.getFreeScreenRects(this._currentTileGroup)
+
+		window.grabSignalID = window.connect("position-changed", this.onMoving.bind(this, window));
 	}
 
 	// called via global.diplay's signal (grab-op-end)
@@ -170,7 +174,7 @@ var WindowGrabHandler = class TilingWindowGrabHandler {
 	}
 
 	// called via @window's signal (position-changed)
-	onMoving(window, topTileGroup, freeScreenRects) {
+	onMoving(window) {
 		this._moveStarted = true;
 		// use the current event's coords instead of global.get_pointer to support touch.
 		// event === null when dnding a maximized window...?
@@ -193,7 +197,7 @@ var WindowGrabHandler = class TilingWindowGrabHandler {
 
 		// tile preview
 		(!!Util.isModPressed(Clutter.ModifierType.CONTROL_MASK) !== MainExtension.settings.get_boolean("invert-ctrl-behaviour"))
-				? this._ctrlPreviewTile(window, topTileGroup, freeScreenRects, eventX, eventY)
+				? this._ctrlPreviewTile(window, eventX, eventY)
 				: this._previewTile(window, eventX, eventY);
 	}
 
@@ -289,12 +293,22 @@ var WindowGrabHandler = class TilingWindowGrabHandler {
 		}
 	}
 
-	_ctrlPreviewTile(window, topTileGroup, freeScreenRects, eventX, eventY) {
-		if (!topTileGroup.length)
+	_ctrlPreviewTile(window, eventX, eventY) {
+        const currMonitorNr = global.display.get_current_monitor();
+		if (this.monitorNr !== currMonitorNr) {
+			this.monitorNr = currMonitorNr;
+
+            this._currentTileGroup = Util.getTopTileGroup();
+            this._freeScreenRects = Util.getFreeScreenRects(this._currentTileGroup)
+		}
+
+		if (!this._currentTileGroup.length) {
+			this.tilePreview.close();
 			return;
+		}
 
 		const pointerLocation = {x: eventX, y: eventY};
-		const screenRects = topTileGroup.map(w => w.tiledRect).concat(freeScreenRects);
+		const screenRects = this._currentTileGroup.map(w => w.tiledRect).concat(this._freeScreenRects);
 		const index = screenRects.findIndex(rect => Util.rectHasPoint(rect, pointerLocation));
 		const hoveredRect = screenRects[index];
 		if (!hoveredRect) {
@@ -302,7 +316,7 @@ var WindowGrabHandler = class TilingWindowGrabHandler {
 			return;
 		}
 
-		this._ctrlHoveredWindow = topTileGroup[index];
+		this._ctrlHoveredWindow = this._currentTileGroup[index];
 		this._ctrlHoveredRect = hoveredRect;
 
 		const edgeRadius = 40;
@@ -313,7 +327,7 @@ var WindowGrabHandler = class TilingWindowGrabHandler {
 
 		// group: possibly push multiple windows away
 		if (atTopEdge || atBottomEdge || atLeftEdge || atRightEdge)
-			this._ctrlGroupPreview(window, hoveredRect, topTileGroup, atTopEdge, atBottomEdge, atLeftEdge, atRightEdge);
+			this._ctrlGroupPreview(window, hoveredRect, this._currentTileGroup, atTopEdge, atBottomEdge, atLeftEdge, atRightEdge);
 		// single: push at max. 1 window away
 		else
 			this._ctrlSinglePreview(window, hoveredRect, eventX, eventY);
