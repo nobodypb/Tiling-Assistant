@@ -108,16 +108,19 @@ function getOpenWindows(currentWorkspace = true) {
 
 // get the top most tiled windows in a group i. e. they complement each other and dont intersect.
 // ignore the top window if DNDing or tiling via keybinding since that window may not be tiled yet
-function getTopTileGroup(ignoreTopWindow = true) {
+function getTopTileGroup(ignoreCurrentWindow = true) {
 	const openWindows = getOpenWindows();
 	const groupedWindows = [];
 	const notGroupedWindows = [];
 	//const currMonitor = openWindows.length && openWindows[0].get_monitor();
     const currMonitor = global.display.get_current_monitor(); // Monitor on which the mouse is
+    const focusWindow = global.display.get_focus_window();
 	let groupedWindowsArea = 0;
 
-	for (let i = ignoreTopWindow ? 1 : 0; i < openWindows.length; i++) {
-		const window = openWindows[i];
+    for (const window of openWindows) {
+        if (ignoreCurrentWindow && focusWindow === window)
+            continue;
+
 		if (window.get_monitor() !== currMonitor)
 			continue;
 
