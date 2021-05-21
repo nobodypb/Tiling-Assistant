@@ -43,29 +43,36 @@ function window_focus(display) {
     const openWindows = Util.getOpenWindows();
     const focusWindow = display.get_focus_window();
 
+    let lowerWindows = [];
+
     log("window_focus", display.focus_window, focusWindow);
 
-    // TODO: Only set opacity if covering other windows
-    for (const window of openWindows) {
+    // Traverse window stack from bottom up
+    for (const window of openWindows.reverse()) {
         const surface = get_window_surface(window);
 
         if (!surface)
             continue; // Nothing we could do with this
+
+        const covering = lowerWindows.some(w => w.get_frame_rect().overlap(window.get_frame_rect()));
+        lowerWindows.push(window);
 
         if (window === focusWindow || !window.is_above()) {
             surface.opacity = 255; // Full opaque, if in focus
             continue;
         }
 
-        //Some graphics bug
-        surface.ease({
-			duration: 250,
-			mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-			opacity: 200,
-			//onComplete: complete_func
-		});
-
-        //actor.set_opacity(200); 
+        if (covering) {
+            surface.ease({
+                duration: 250,
+                mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                opacity: 180,
+                //onComplete: complete_func
+            });
+        }
+        else {
+            surface.opacity = 255;
+        }
     }
 }
 
