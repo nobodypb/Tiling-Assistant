@@ -553,29 +553,34 @@ var WindowGrabHandler = class TilingWindowGrabHandler {
 		const tiledRectDiffWidth = window.tiledRect.width - grabbedsOldTiledRect.width;
 		const tiledRectDiffHeight = window.tiledRect.height - grabbedsOldTiledRect.height;
 
-		for (const w of window.tileGroup) {
-			if (w === window)
-				continue;
+        if (window.tileGroup) {
+            for (const w of window.tileGroup) {
+                if (w === window)
+                    continue;
 
-			if (w.resizeSameSideH) {
-				w.tiledRect.x += tiledRectDiffX;
-				w.tiledRect.width += tiledRectDiffWidth;
-			} else if (w.resizeSameSideH === false) {
-				w.tiledRect.x += isResizingE ? tiledRectDiffWidth : 0;
-				w.tiledRect.width -= tiledRectDiffWidth;
-			}
+                if (w.resizeSameSideH) {
+                    w.tiledRect.x += tiledRectDiffX;
+                    w.tiledRect.width += tiledRectDiffWidth;
+                } else if (w.resizeSameSideH === false) {
+                    w.tiledRect.x += isResizingE ? tiledRectDiffWidth : 0;
+                    w.tiledRect.width -= tiledRectDiffWidth;
+                }
 
-			if (w.resizeSameSideV) {
-				w.tiledRect.y += tiledRectDiffY;
-				w.tiledRect.height += tiledRectDiffHeight;
-			} else if (w.resizeSameSideV === false) {
-				w.tiledRect.y += isResizingS ? tiledRectDiffHeight : 0;
-				w.tiledRect.height -= tiledRectDiffHeight;
-			}
+                if (w.resizeSameSideV) {
+                    w.tiledRect.y += tiledRectDiffY;
+                    w.tiledRect.height += tiledRectDiffHeight;
+                } else if (w.resizeSameSideV === false) {
+                    w.tiledRect.y += isResizingS ? tiledRectDiffHeight : 0;
+                    w.tiledRect.height -= tiledRectDiffHeight;
+                }
 
-			w.resizeSameSideV = null;
-			w.resizeSameSideH = null;
-		}
+                w.resizeSameSideV = null;
+                w.resizeSameSideH = null;
+            }
+        }
+        else {
+            log("window.tileGroup is undefined");
+        }
 	}
 
 	// called via @window's signal (size-changed):
