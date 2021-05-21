@@ -112,7 +112,8 @@ function getTopTileGroup(ignoreTopWindow = true) {
 	const openWindows = getOpenWindows();
 	const groupedWindows = [];
 	const notGroupedWindows = [];
-	const currMonitor = openWindows.length && openWindows[0].get_monitor();
+	//const currMonitor = openWindows.length && openWindows[0].get_monitor();
+    const currMonitor = global.display.get_current_monitor(); // Monitor on which the mouse is
 	let groupedWindowsArea = 0;
 
 	for (let i = ignoreTopWindow ? 1 : 0; i < openWindows.length; i++) {
@@ -144,6 +145,9 @@ function getTopTileGroup(ignoreTopWindow = true) {
 			// window is maximized, so all windows below it cant belong to this group
 			if (windowIsMaximized(window))
 				break;
+
+            if (window.above)
+                continue; // Ignore always-on-top windows
 
 			notGroupedWindows.push(window);
 		}
