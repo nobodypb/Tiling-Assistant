@@ -192,7 +192,7 @@ var WindowGrabHandler = class TilingWindowGrabHandler {
 		}
 
 		// tile preview
-		Util.isModPressed(Clutter.ModifierType.CONTROL_MASK)
+		(!!Util.isModPressed(Clutter.ModifierType.CONTROL_MASK) !== MainExtension.settings.get_boolean("invert-ctrl-behaviour"))
 				? this._ctrlPreviewTile(window, topTileGroup, freeScreenRects, eventX, eventY)
 				: this._previewTile(window, eventX, eventY);
 	}

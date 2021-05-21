@@ -8,6 +8,9 @@
 		<key name="enable-tiling-popup" type="b">
 			<default>true</default>
 		</key>
+        <key name="invert-ctrl-behaviour" type="b">
+			<default>false</default>
+		</key>
 		<key name="tiling-popup-current-workspace-only" type="b">
 			<default>true</default>
 		</key>
